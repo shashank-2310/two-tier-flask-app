@@ -1,0 +1,28 @@
+# Stage 1
+FROM python:3.13-slim AS builder
+
+WORKDIR /app
+
+# Install build dependencies
+RUN apt-get update \
+    && apt-get upgrade -y \
+    && apt-get install -y gcc default-libmysqlclient-dev pkg-config \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY requirements.txt .
+
+RUN pip install mysqlclient && pip install --no-cache-dir -r requirements.txt --target=/app/deps
+
+
+# Stage 2
+FROM gcr.io/distroless/python3-debian12
+
+WORKDIR /app
+
+COPY --from=builder /app/deps app/deps
+COPY --from=builder /app .
+
+ENV PYTHONPATH="/app/deps"
+
+# Serve the app
+CMD ["app.py"]
