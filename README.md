@@ -1,3 +1,4 @@
+<img width="2816" height="1536" alt="CICD" src="https://github.com/user-attachments/assets/a5ec9bbc-521b-4435-8e64-36a38b3536d2" />
  
 # Flask App with MySQL Docker Setup
 
