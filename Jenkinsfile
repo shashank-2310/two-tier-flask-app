@@ -3,22 +3,22 @@ pipeline{
     agent { label "dev" };
     
     stages{
-        stage("code"){
+        stage("Code"){
             steps{
                 git url: "https://github.com/shashank-2310/two-tier-flask-app.git", branch: "master"
             }
         }
-        stage("build"){
+        stage("Build"){
             steps{
                 sh "docker build -t two-tier-flask-app -f Dockerfile-multistage ."
             }
         }
-        stage("test"){
+        stage("Test"){
             steps{
-                echo "tester/dev jaane ye..."
+                echo "Task for testers/devs..."
             }
         }
-        stage("push to docker hub"){
+        stage("Push to Docker Hub"){
             steps{
                 withCredentials([usernamePassword(
                     credentialsId: "dockerHubCreds",
@@ -33,7 +33,7 @@ pipeline{
                 }
             }
         }
-        stage("deploy"){
+        stage("Deploy"){
             steps{
                 sh "docker compose up -d"
             }
