@@ -40,4 +40,25 @@ pipeline{
         }
         
     }
+    
+    post{
+        success{
+            script{
+                emailext from:'shashankgupta944@gmail.com',
+                    subject: "Build Successful for Demo CICD App",
+                    body: "Good News: Your build was successful for Demo CICD App!",
+                    to: 'shashankgupta944@gmail.com',
+                    mimeType: 'text/html'
+            }
+        }
+        failure{
+            script{
+                emailext from:'shashankgupta944@gmail.com',
+                    subject: "Build Failed for Demo CICD App",
+                    body: "Good News: Your build was failed for Demo CICD App!",
+                    to: 'shashankgupta944@gmail.com',
+                    mimeType: 'text/html'
+          }
+       }
+    }
 }
