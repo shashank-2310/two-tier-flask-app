@@ -1,29 +1,29 @@
-# Stage 1
-FROM python:3.13-slim AS builder
+# ------------------- Stage 1: Build Stage ------------------------------
+FROM python:3.9-slim AS builder
 
 WORKDIR /app
 
 # Install build dependencies
-RUN apt-get update \
-    && apt-get upgrade -y \
-    && apt-get install -y gcc default-libmysqlclient-dev pkg-config \
-    && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends gcc default-libmysqlclient-dev pkg-config && \
+    rm -rf /var/lib/apt/lists/*
 
-COPY requirements.txt ./
-RUN pip install mysqlclient \
-    && pip install --no-cache-dir -r requirements.txt --target=/app/deps
+# Copy and install Python dependencies
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy your source code, including app.py
-COPY . .
-
-# Stage 2
-FROM gcr.io/distroless/python3-debian12
+# ------------------- Stage 2: Final Stage ------------------------------
+FROM python:3.9-slim
 
 WORKDIR /app
 
-COPY --from=builder /app/deps /app/deps
-COPY --from=builder /app /app
+# Install runtime dependencies only
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends libmariadb3 && \
+    rm -rf /var/lib/apt/lists/*
 
-ENV PYTHONPATH="/app/deps"
+# Copy dependencies and application code from the builder stage
+COPY --from=builder /usr/local/lib/python3.9/site-packages/ /usr/local/lib/python3.9/site-packages/
+COPY . .
 
-CMD ["app.py"]
+CMD ["python", "app.py"]
